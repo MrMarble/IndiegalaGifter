@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IndieGala Gift Helper
 // @namespace    https://github.com/MrMarble/IndieGalaGifter
-// @version      0.4
+// @version      0.5
 // @updateURL    https://github.com/MrMarble/IndieGalaGifter/raw/master/IndieGalaGifter.user.js
 // @downloadURL  https://github.com/MrMarble/IndieGalaGifter/raw/master/IndieGalaGifter.user.js
 // @description  Sending a gift has never been so easy!
@@ -21,11 +21,11 @@
 
   function setUp() {
     ChromeFix = setInterval(nonFirefoxFix, 500);
-    $('body').append('<div id="indiegala-gifter-log"></div>');
-    $(document).ajaxComplete((event, xhr, settings) => {
+    jQuery('body').append('<div id="indiegala-gifter-log"></div>');
+    jQuery(document).ajaxComplete((event, xhr, settings) => {
       if (settings.url.indexOf('/ajaxsale?sale_id=') > -1) {
         clearInterval(ChromeFix);
-        $forms = $('form[id^=form_gift_]');
+        $forms = jQuery('form[id^=form_gift_]');
         if ($forms.length > 0) {
           createButton();
         }
@@ -35,7 +35,7 @@
   }
 
   function nonFirefoxFix() {
-    $forms = $('form[id^=form_gift_]');
+    $forms = jQuery('form[id^=form_gift_]');
     if ($forms.length > 0) {
       createButton();
       clearInterval(ChromeFix);
@@ -51,8 +51,8 @@
   }
 
   function createButton() {
-    $('body').append('<button id="indiegala-gifter">SEND ALL</button>');
-    let $button = $('#indiegala-gifter');
+    jQuery('body').append('<button id="indiegala-gifter">SEND ALL</button>');
+    let $button = jQuery('#indiegala-gifter');
     $button.on('click', sendGift);
   }
 
@@ -60,11 +60,11 @@
     if ($forms !== undefined) {
       let validForms = [];
       $forms.each((index, element) => {
-        if ($(element).find('input:visible').length > 0) {
-          if ($(element).find('input:visible').val() !== "") {
+        if (jQuery(element).find('input:visible').length > 0) {
+          if (jQuery(element).find('input:visible').val() !== "") {
             let form = new FormData(element);
             form.toString = function () {
-              return this.get($(element).find('input:visible').attr('name'));
+              return this.get(jQuery(element).find('input:visible').attr('name'));
             };
             validForms.push(form);
           }
@@ -76,7 +76,7 @@
           return false;
         } else {
           for (let FORM of validForms) {
-            $.ajax({
+            jQuery.ajax({
               url: '/profile',
               data: FORM,
               contentType: false,
@@ -88,7 +88,6 @@
             }).fail(function () {
               showMessage('Gift send to ' + FORM.toString(), 'error');
             });
-            await sleep(100);
           }
         }
       }
@@ -96,18 +95,14 @@
   }
 
   function showMessage(text, status) {
-    let $log = $('#indiegala-gifter-log');
-    if ($('body').find($log).length == 0) {
-      $('body').append($log);
+    let $log = jQuery('#indiegala-gifter-log');
+    if (jQuery('body').find($log).length == 0) {
+      jQuery('body').append($log);
     }
     if ($log.find('.indiegala-gifter-log-child').length > 5) {
       $log.find('.indiegala-gifter-log-child:first').remove();
     }
 
     $log.append('<div class="indiegala-gifter-log-child ' + status + '">' + text + '</div>');
-  }
-
-  async function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 })();

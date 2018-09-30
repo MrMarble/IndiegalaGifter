@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IndieGala Gift Helper
 // @namespace    https://github.com/MrMarble/IndieGalaGifter
-// @version      0.3
+// @version      0.4
 // @updateURL    https://github.com/MrMarble/IndieGalaGifter/raw/master/IndieGalaGifter.user.js
 // @downloadURL  https://github.com/MrMarble/IndieGalaGifter/raw/master/IndieGalaGifter.user.js
 // @description  Sending a gift has never been so easy!

@@ -16,12 +16,15 @@
   $.noConflict();
 
   let $forms = undefined;
+  let ChromeFix = undefined;
   setUp();
 
   function setUp() {
+    ChromeFix = setInterval(nonFirefoxFix, 500);
     $('body').append('<div id="indiegala-gifter-log"></div>');
     $(document).ajaxComplete((event, xhr, settings) => {
       if (settings.url.indexOf('/ajaxsale?sale_id=') > -1) {
+        clearInterval(ChromeFix);
         $forms = $('form[id^=form_gift_]');
         if ($forms.length > 0) {
           createButton();
@@ -29,6 +32,14 @@
       }
     });
     createStyles();
+  }
+
+  function nonFirefoxFix() {
+    $forms = $('form[id^=form_gift_]');
+    if ($forms.length > 0) {
+      createButton();
+      clearInterval(ChromeFix);
+    }
   }
 
   function createStyles() {

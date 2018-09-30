@@ -96,7 +96,7 @@
     $log.append('<div class="indiegala-gifter-log-child ' + status + '">' + text + '</div>');
   }
 
-  function sleep(ms) {
+  async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 })();

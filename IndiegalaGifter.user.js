@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         IndieGala Gift Helper
 // @namespace    https://github.com/MrMarble/IndieGalaGifter
-// @version      0.1
+// @version      0.2
 // @updateURL    https://github.com/MrMarble/IndieGalaGifter/raw/master/IndieGalaGifter.user.js
 // @downloadURL  https://github.com/MrMarble/IndieGalaGifter/raw/master/IndieGalaGifter.user.js
 // @description  Sending a gift has never been so easy!
 // @author       MrMarble
 // @match        https://www.indiegala.com/profile*
 // @require      https://code.jquery.com/jquery-3.3.1.min.js
-// @grant        none
+// @grant        GM_addStyle
 // ==/UserScript==
 
 (function () {
@@ -19,6 +19,7 @@
   setUp();
 
   function setUp() {
+    $('body').append('<div id="indiegala-gifter-log"></div>');
     $(document).ajaxComplete((event, xhr, settings) => {
       if (settings.url.indexOf('/ajaxsale?sale_id=') > -1) {
         $forms = $('form[id^=form_gift_]');
@@ -27,22 +28,20 @@
         }
       }
     });
+    createStyles();
+  }
+
+  function createStyles() {
+    GM_addStyle('#indiegala-gifter{position:fixed;right:30px;top:20px;background-color:#cc001d;color:white;padding:5px 10px;border-radius:5px;font-weight:bold}');
+    GM_addStyle('#indiegala-gifter-log{position:fixed;right:10px;bottom:0}');
+    GM_addStyle('.indiegala-gifter-log-child{padding:10px;border-radius:8px;color:white;font-weight:bold}');
+    GM_addStyle('.indiegala-gifter-log-child.ok{background-color: rgba(0,255,0,.2);border: 1px solid lime;}');
+    GM_addStyle('.indiegala-gifter-log-child.error{background-color: rgba(255,0,0,.2);border: 1px solid red;}');
   }
 
   function createButton() {
     $('body').append('<button id="indiegala-gifter">SEND ALL</button>');
     let $button = $('#indiegala-gifter');
-
-    $button.css({
-      "position": "fixed",
-      "right": "30px",
-      "top": "20px",
-      "backgroundColor": "#cc001d",
-      "color": "white",
-      "padding": "5px 10px",
-      "borderRadius": "5px",
-      "fontWeight": "bold"
-    });
     $button.on('click', sendGift);
   }
 
@@ -74,17 +73,27 @@
               method: 'POST',
               type: 'POST'
             }).done(function () {
-              console.log('TODO CORRECTO!')
-              FORM.toString = FORM.toString() + ' OK';
+              showMessage('Gift send to ' + FORM.toString(), 'ok');
             }).fail(function () {
-              console.error('ALGO FALLO NO MASS');
-              FORM.toString = FORM.toString() + ' ERROR';
+              showMessage('Gift send to ' + FORM.toString(), 'error');
             });
             await sleep(100);
           }
         }
       }
     }
+  }
+
+  function showMessage(text, status) {
+    let $log = $('#indiegala-gifter-log');
+    if ($('body').find($log).length == 0) {
+      $('body').append($log);
+    }
+    if ($log.find('.indiegala-gifter-log-child').length > 5) {
+      $log.find('.indiegala-gifter-log-child:first').remove();
+    }
+
+    $log.append('<div class="indiegala-gifter-log-child ' + status + '">' + text + '</div>');
   }
 
   function sleep(ms) {
